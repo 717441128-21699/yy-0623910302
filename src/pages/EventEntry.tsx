@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '@/store/useStore'
-import { Plus, Trash2, ChevronRight, ClipboardList, FileCheck, AlertTriangle, ListChecks } from 'lucide-react'
+import { Plus, Trash2, ChevronRight, ClipboardList, FileCheck, AlertTriangle, ListChecks, Save, RotateCcw, CheckCircle2 } from 'lucide-react'
 
 const EVENT_TYPES = ['化学品泄漏', '火灾爆炸', '建筑坍塌', '交通安全', '自然灾害', '公共卫生', '其他']
 const CASUALTY_LEVELS = ['无伤亡', '轻伤', '重伤', '死亡', '伤亡不明']
@@ -26,11 +26,17 @@ const inputBase = 'border border-gray-200 rounded-lg px-3 py-2 text-sm'
 
 export default function EventEntry() {
   const navigate = useNavigate()
-  const { event, setEvent, addFact, removeFact, addUncertainInfo, removeUncertainInfo, updateUncertainInfoStatus, generateChecklist, toggleChecklistItem, setCurrentStep } = useStore()
+  const { event, setEvent, addFact, removeFact, addUncertainInfo, removeUncertainInfo, updateUncertainInfoStatus, generateChecklist, toggleChecklistItem, setCurrentStep, resetEvent } = useStore()
 
   const [unitsInput, setUnitsInput] = useState(event.involvedUnits.join(','))
   const [newFact, setNewFact] = useState({ content: '', source: '', confirmedAt: '' })
   const [newUncertain, setNewUncertain] = useState({ content: '', status: '待核实' as const, urgency: '中' as const })
+  const [saved, setSaved] = useState(false)
+
+  const handleSave = () => {
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
 
   const handleUnitsChange = (val: string) => {
     setUnitsInput(val)
@@ -58,6 +64,25 @@ export default function EventEntry() {
 
   return (
     <div className="space-y-6 pb-24">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="font-serif text-2xl font-semibold text-navy-800">事件录入</h2>
+          <p className="text-sm text-gray-400 mt-1 flex items-center gap-2">
+            <span className="inline-flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5 text-emergency-green" /> 数据自动保存</span>
+            {event.name && <span className="text-gray-300">|</span>}
+            {event.name && <span>当前事件：{event.name}</span>}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {saved && <span className="text-xs text-emergency-green flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> 已保存</span>}
+          <button onClick={handleSave} className="flex items-center gap-1.5 px-4 py-2 bg-amber text-navy-900 rounded-lg text-sm font-medium hover:bg-amber-dark transition-colors">
+            <Save className="w-4 h-4" /> 保存
+          </button>
+          <button onClick={() => { if (confirm('确认清空所有数据？此操作不可恢复。')) resetEvent() }} className="flex items-center gap-1.5 px-4 py-2 border border-gray-200 text-gray-500 rounded-lg text-sm hover:bg-gray-50 transition-colors">
+            <RotateCcw className="w-4 h-4" /> 重置
+          </button>
+        </div>
+      </div>
       <section className="bg-white rounded-xl card-shadow p-5 animate-fade-in-up">
         <h2 className={titleCls}>
           <ClipboardList className="w-5 h-5 text-amber" />

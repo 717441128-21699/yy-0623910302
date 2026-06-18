@@ -33,6 +33,8 @@ export interface EventInfo {
   checklist: ChecklistItem[]
 }
 
+export type Topic = '瞒报' | '救援迟缓' | '责任追究' | '空气安全' | '规划合规' | '投诉回应'
+
 export interface SentimentItem {
   id: string
   channel: '媒体报道' | '短视频评论' | '社区论坛' | '投诉热线'
@@ -43,6 +45,7 @@ export interface SentimentItem {
   heat: number
   timestamp: string
   source?: string
+  topics?: Topic[]
 }
 
 export interface HighFreqQuestion {
@@ -51,6 +54,8 @@ export interface HighFreqQuestion {
   frequency: number
   emotionLevel: 1 | 2 | 3 | 4 | 5
   channels: string[]
+  topic: Topic
+  responseSuggestion: string
 }
 
 export interface TemplateSentence {
